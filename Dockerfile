@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
  && rm -rf /var/lib/apt/lists/*
 
-# Get latest stable release tag from GitHub and install that exact version
 RUN OPENCLAW_REF="$(curl -fsSL https://api.github.com/repos/openclaw/openclaw/releases/latest | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p')" \
  && test -n "$OPENCLAW_REF" \
  && echo "Installing OpenClaw release: $OPENCLAW_REF" \
@@ -20,6 +19,7 @@ RUN OPENCLAW_REF="$(curl -fsSL https://api.github.com/repos/openclaw/openclaw/re
 WORKDIR /app
 
 RUN npm install
+RUN npm run build
 
 RUN chmod 755 /app/openclaw.mjs
 
