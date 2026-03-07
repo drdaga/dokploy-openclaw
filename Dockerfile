@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
  && rm -rf /var/lib/apt/lists/*
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 RUN OPENCLAW_REF="$(curl -fsSL https://api.github.com/repos/openclaw/openclaw/releases/latest | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p')" \
  && test -n "$OPENCLAW_REF" \
  && echo "Installing OpenClaw release: $OPENCLAW_REF" \
@@ -19,6 +21,7 @@ RUN OPENCLAW_REF="$(curl -fsSL https://api.github.com/repos/openclaw/openclaw/re
 WORKDIR /app
 
 RUN npm install
+RUN pnpm install
 RUN npm run build
 
 RUN chmod 755 /app/openclaw.mjs
