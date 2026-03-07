@@ -1,33 +1,33 @@
 FROM node:22-bookworm
 
-ARG OPENCLAW_REF=main
-
 WORKDIR /tmp
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
-    openssh-client \
     curl \
     python3 \
     make \
     g++ \
  && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/openclaw/openclaw.git /app \
- && cd /app \
- && git checkout "$OPENCLAW_REF"
+# Get latest stable release tag from GitHub and install that exact version
+RUN OPENCLAW_REF="$(curl -fsSL https://api.github.com/repos/openclaw/openclaw/releases/latest | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p')" \
+ && test -n "$OPENCLAW_REF" \
+ && echo "Installing OpenClaw release: $OPENCLAW_REF" \
+ && git clone --depth 1 --branch "$OPENCLAW_REF" https://github.com/openclaw/openclaw.git /app
 
 WORKDIR /app
 
 RUN npm install
-RUN chmod 755 /app/openclaw.mjs
 
-RUN mkdir -p /home/node/.openclaw /home/node/.openclaw/workspace \
- && chown -R node:node /home/node
+RUN chmod 755 /app/openclaw.mjs
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod 700 /app/entrypoint.sh
+
+RUN mkdir -p /home/node/.openclaw /home/node/.openclaw/workspace \
+ && chown -R node:node /home/node
 
 ENV NODE_ENV=production
 
