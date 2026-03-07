@@ -2,6 +2,7 @@
 set -eu
 
 OPENCLAW_HOME="/home/node/.openclaw"
+OPENCLAW_GATEWAY_PORT="${OPENCLAW_GATEWAY_PORT:-18789}"
 
 mkdir -p "$OPENCLAW_HOME" "$OPENCLAW_HOME/workspace"
 chown -R node:node "$OPENCLAW_HOME"
@@ -14,4 +15,4 @@ if [ -n "${OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS:-}" ]; then
   su -s /bin/sh node -c "node /app/openclaw.mjs config set gateway.controlUi.allowedOrigins '[\"$OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS\"]'"
 fi
 
-exec su -s /bin/sh node -c "exec node /app/openclaw.mjs gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port 18789 --allow-unconfigured"
+exec su -s /bin/sh node -c "exec node /app/openclaw.mjs gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port ${OPENCLAW_GATEWAY_PORT} --allow-unconfigured"
