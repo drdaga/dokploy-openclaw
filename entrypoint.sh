@@ -15,4 +15,8 @@ if [ -n "${OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS:-}" ]; then
   su -s /bin/sh node -c "node /app/openclaw.mjs config set gateway.controlUi.allowedOrigins '[\"$OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS\"]'"
 fi
 
+if [ -n "${OPENCLAW_GATEWAY_TRUSTED_PROXIES:-}" ]; then
+  su -s /bin/sh node -c "node /app/openclaw.mjs config set gateway.trustedProxies '[\"$OPENCLAW_GATEWAY_TRUSTED_PROXIES\"]'"
+fi
+
 exec su -s /bin/sh node -c "exec node /app/openclaw.mjs gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port ${OPENCLAW_GATEWAY_PORT} --allow-unconfigured"
