@@ -1,8 +1,9 @@
 FROM node:22-bookworm
 
-WORKDIR /app
+ARG OPENCLAW_REF=main
 
-# Install required packages
+WORKDIR /tmp
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
@@ -13,22 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
  && rm -rf /var/lib/apt/lists/*
 
-# Pull latest OpenClaw source
-RUN git clone https://github.com/openclaw/openclaw.git /app
+RUN git clone https://github.com/openclaw/openclaw.git /app \
+ && cd /app \
+ && git checkout "$OPENCLAW_REF"
 
 WORKDIR /app
 
-# Install dependencies
 RUN npm install
-
-# Make openclaw executable
 RUN chmod 755 /app/openclaw.mjs
 
-# Create runtime directories
 RUN mkdir -p /home/node/.openclaw /home/node/.openclaw/workspace \
  && chown -R node:node /home/node
 
-# Copy entrypoint
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod 700 /app/entrypoint.sh
 
